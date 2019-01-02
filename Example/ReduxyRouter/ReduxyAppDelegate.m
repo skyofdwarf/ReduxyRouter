@@ -7,40 +7,106 @@
 //
 
 #import "ReduxyAppDelegate.h"
+#import "Store.h"
+#import "BreedListViewController.h"
+#import "AboutViewController.h"
+#import "RandomDogViewController.h"
+
+@import Reduxy;
+@import ReduxyRouter;
+
+@interface ReduxyAppDelegate ()
+@property (strong, nonatomic) ReduxyStore *store;
+
+@end
+
 
 @implementation ReduxyAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    [self buildTargets];
+    [self buildPaths];
+    
+    self.window = [ReduxyRouter.shared startWithPath:@"main"];
+    
     return YES;
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+#pragma mark - router
+
+- (void)buildTargets {
+    [ReduxyRouter.shared addTarget:@"breedlist" creator:^id<ReduxyRoutable>(id<ReduxyRoutable> from, NSDictionary *context) {
+        UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        BreedListViewController *dest = [sb instantiateViewControllerWithIdentifier:@"breedlist"];
+        
+        return dest;
+    }];
+    
+    [ReduxyRouter.shared addTarget:@"randomdog" creator:^id<ReduxyRoutable>(id<ReduxyRoutable> from, NSDictionary *context) {
+        RandomDogViewController *dest = [from.vc.storyboard instantiateViewControllerWithIdentifier:@"randomdog"];
+        
+        dest.store = Store.shared;
+        dest.breed = context[@"breed"];
+        
+        return dest;
+    }];
+    
+    [ReduxyRouter.shared addTarget:@"about" creator:^id<ReduxyRoutable>(id<ReduxyRoutable> from, NSDictionary *context) {
+        AboutViewController *dest = [from.vc.storyboard instantiateViewControllerWithIdentifier:@"about"];
+        return dest;
+    }];
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+- (void)buildPaths {
+    [ReduxyRouter.shared attachStore:Store.shared];
+    
+    [ReduxyRouter.shared addPath:@"main"
+                         targets:@[ @"breedlist" ]
+                           route:^void(id<ReduxyRoutable> from, NSDictionary<NSString *,id<ReduxyRoutable>> *to, NSDictionary *context) {
+                               id<ReduxyRoutable> routable = to[@"breedlist"];
+                               UINavigationController *nv = [[UINavigationController alloc] initWithRootViewController:routable.vc];
+                               
+                               from.window.rootViewController = nv;
+                           } unroute:^void(id<ReduxyRoutable> from) {
+                               from.window.rootViewController = nil;
+                           }];
+    
+    [ReduxyRouter.shared addPath:@"randomdog"
+                         targets:@[ @"randomdog" ]
+                           route:^void(id<ReduxyRoutable> from, NSDictionary<NSString *,id<ReduxyRoutable>> *to, NSDictionary *context) {
+                               id<ReduxyRoutable> routable = to[@"randomdog"];
+                               
+                               [from.vc showViewController:routable.vc sender:nil];
+                           } unroute:^void(id<ReduxyRoutable> from) {
+                               [from.vc.navigationController popViewControllerAnimated:YES];
+                           }];
+    
+    [ReduxyRouter.shared addPath:@"about"
+                         targets:@[ @"about" ]
+                           route:^void(id<ReduxyRoutable> from, NSDictionary<NSString *,id<ReduxyRoutable>> *to, NSDictionary *context) {
+                               id<ReduxyRoutable> routable = to[@"about"];
+                               
+                               [from.vc showViewController:routable.vc sender:nil];
+                           } unroute:^void(id<ReduxyRoutable> from) {
+                               [from.vc.navigationController popViewControllerAnimated:YES];
+                           }];
+    
+    [ReduxyRouter.shared addPath:@"about-modal"
+                         targets:@[ @"about" ]
+                           route:^void(id<ReduxyRoutable> from, NSDictionary<NSString *,id<ReduxyRoutable>> *to, NSDictionary *context) {
+                               id<ReduxyRoutable> about = to[@"about"];
+                               UINavigationController *nv = [[UINavigationController alloc] initWithRootViewController:about.vc];
+                               
+                               [from.vc presentViewController:nv
+                                                     animated:YES
+                                                   completion:nil];
+                           } unroute:^void(id<ReduxyRoutable> from) {
+                               [from.vc dismissViewControllerAnimated:YES
+                                                           completion:nil];
+                           }];
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-}
 
 @end

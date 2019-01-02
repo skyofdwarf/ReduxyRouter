@@ -1,0 +1,19 @@
+PODS:
+  - Reduxy (0.3.0)
+  - ReduxyRouter (0.3.0):
+    - Reduxy (~> 0.3)
+
+DEPENDENCIES:
+  - ReduxyRouter (from `../`)
+
+EXTERNAL SOURCES:
+  ReduxyRouter:
+    :path: ../
+
+SPEC CHECKSUMS:
+  Reduxy: 09911c2c03c3087b11aa54c46660862489d967ba
+  ReduxyRouter: b4f467faaa4b8fdc95d75cd756294d88c4bd2f1b
+
+PODFILE CHECKSUM: 87618204ae9557e3153c352e70cae7ccd0319234
+
+COCOAPODS: 1.4.0

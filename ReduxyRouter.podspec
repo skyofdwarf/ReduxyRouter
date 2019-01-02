@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ReduxyRouter'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of ReduxyRouter.'
+  s.version          = '0.3.0'
+  s.summary          = 'Router extension for Reduxy'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,7 +18,12 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+ReduxyRouter is test implementation of router system for Reduxy.
+ReduxyRouter is in charge of creation and transitions of Routables which are NSObjects conforming ReduxyRoutable protocol.
+ReduxyRouter uses step by step route/unroute to transition from a Routable to other Routable.
+
+It is designed to enable to use with  ReduxyRecorder, but it is just a test implementation so maybe run uncompletely in Apps which have complex transitions or used with ReduxyRecorder.
+
                        DESC
 
   s.homepage         = 'https://github.com/skyofdwarf/ReduxyRouter'
@@ -38,5 +43,5 @@ TODO: Add long description of the pod here.
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency 'Reduxy', '~> 0.3'
 end
