@@ -1,3 +1,7 @@
+# Note
+
+It's a Experiment, don't apply it
+
 # ReduxyRouter
 
 [![CI Status](https://img.shields.io/travis/skyofdwarf/ReduxyRouter.svg?style=flat)](https://travis-ci.org/skyofdwarf/ReduxyRouter)
